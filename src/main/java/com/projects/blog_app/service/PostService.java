@@ -1,9 +1,13 @@
 package com.projects.blog_app.service;
 
+import com.projects.blog_app.config.CustomUserDetails;
 import com.projects.blog_app.model.Post;
+import com.projects.blog_app.model.Roles;
+import com.projects.blog_app.model.Users;
 import com.projects.blog_app.repo.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +19,9 @@ public class PostService {
     private PostRepo repo;
 
     public Post createPost(Post post){
-        System.out.println("Creating new post");
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users user = customUserDetails.getUser();
+        post.setUser(user);
         return repo.save(post);
     }
 
@@ -27,24 +33,29 @@ public class PostService {
         return repo.findAll();
     }
 
-    public int updatePost(Post post, int id) {
-        if(repo.findById(id).isPresent()) {
-            Post newPost = new Post();
-            newPost.setId(id);
-            newPost.setTitle(post.getTitle());
-            newPost.setDescription(post.getDescription());
+    public void updatePost(Post newPost, int id) {
+        Post post = repo.findById(id).orElseThrow();
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users user = customUserDetails.getUser();
+
+        if(post.getUser().getId() == user.getId()) {
+            newPost.setId(post.getId());
             repo.save(newPost);
-            return id;
+        }else{
+            throw new IllegalStateException("You can only update your own post");
         }
-        return -1;
+
     }
 
-    public int deletePost(int id) {
-        if(repo.findById(id).isPresent()) {
-            repo.deleteById(id);
-            return id;
-        }
+    public void deletePost(int id) {
+        Post post = repo.findById(id).orElseThrow();
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Users user = customUserDetails.getUser();
 
-        return -1;
+        if(post.getUser().getId() == user.getId() || user.getRoles().contains(Roles.ADMIN)) {
+            repo.deleteById(id);
+        }else{
+            throw new IllegalStateException("You do not have permission to delete this post");
+        }
     }
 }

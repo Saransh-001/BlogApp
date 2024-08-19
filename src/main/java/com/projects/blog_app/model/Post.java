@@ -28,4 +28,8 @@ public class Post {
     @OneToMany(mappedBy = "post")
     List<Comment> comments = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
+
 }

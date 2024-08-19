@@ -10,50 +10,43 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/posts")
 public class PostController {
 
     @Autowired
     PostService postService;
 
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<String> createPost(@RequestBody Post post){
         Post response = postService.createPost(post);
 
         return new ResponseEntity<>("Post created successfully\nId: " + response.getId(), HttpStatus.CREATED);
     }
 
-    @GetMapping("/post/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Post> getPost(@PathVariable int id){
         Post response = postService.getPostById(id);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/posts")
+    @GetMapping
     public ResponseEntity<List<Post>> getPosts(){
         return new ResponseEntity<>(postService.getPosts(), HttpStatus.OK);
     }
 
-    @PutMapping("/post/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<String> updatePost(@RequestBody Post post, @PathVariable int id){
-        int response = -1;
-        response = postService.updatePost(post, id);
-        if(response != -1){
-            return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+        postService.updatePost(post, id);
+        return new ResponseEntity<>("Updated Successfully", HttpStatus.OK);
 
     }
 
-    @DeleteMapping("/post/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<String> deletePost(@PathVariable int id){
-        int response = -1;
-        response = postService.deletePost(id);
-        if(response != -1){
-            return new ResponseEntity<>("Id: " + response + " Deleted Successfully", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Deletion Failed as Post Not Found", HttpStatus.NOT_FOUND);
+        postService.deletePost(id);
+        return new ResponseEntity<>(" Deleted Successfully", HttpStatus.OK);
+
     }
 
 }
