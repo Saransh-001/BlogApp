@@ -1,6 +1,7 @@
 package com.projects.blog_app.service;
 
 import com.projects.blog_app.config.CustomUserDetails;
+import com.projects.blog_app.model.Comment;
 import com.projects.blog_app.model.Post;
 import com.projects.blog_app.model.Roles;
 import com.projects.blog_app.model.Users;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,6 +19,9 @@ public class PostService {
 
     @Autowired
     private PostRepo repo;
+
+    @Autowired
+    private CommentService commentService;
 
     public Post createPost(Post post){
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -53,6 +58,7 @@ public class PostService {
         Users user = customUserDetails.getUser();
 
         if(post.getUser().getId() == user.getId() || user.getRoles().contains(Roles.ADMIN)) {
+            commentService.deleteCommentsByPostId(id);
             repo.deleteById(id);
         }else{
             throw new IllegalStateException("You do not have permission to delete this post");

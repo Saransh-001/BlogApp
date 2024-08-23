@@ -43,11 +43,11 @@ public class CommentController {
 //        return new ResponseEntity<>("Comment updated successfully", HttpStatus.OK);
 //    }
 
-//    @DeleteMapping("comments/{id}")
-//    public ResponseEntity<String> deleteCommentById(@PathVariable int id) {
-//        commentService.deleteCommentById(id);
-//
-//        return new ResponseEntity<>("Comment deleted successfully", HttpStatus.OK);
-//    }
+    @DeleteMapping("comments/{id}")
+    public ResponseEntity<String> deleteCommentById(@PathVariable int id) {
+        commentService.deleteCommentById(id);
+
+        return new ResponseEntity<>("Comment deleted successfully", HttpStatus.OK);
+    }
 
 }
