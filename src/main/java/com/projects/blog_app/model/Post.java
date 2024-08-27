@@ -17,16 +17,16 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
     @Column
-    String title;
+    private String title;
 
     @Column
-    String description;
+    private String description;
 
     @OneToMany(mappedBy = "post")
-    List<Comment> comments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
